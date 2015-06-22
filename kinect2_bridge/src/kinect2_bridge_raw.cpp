@@ -793,25 +793,11 @@ private:
     switch(type)
     {
     case IR_SD:
-    case IR_SD_RECT:
     case DEPTH_SD:
-    case DEPTH_SD_RECT:
-    case DEPTH_HD:
-    case DEPTH_QHD:
       msgImage.encoding = sensor_msgs::image_encodings::TYPE_16UC1;
       break;
-    case COLOR_SD_RECT:
     case COLOR_HD:
-    case COLOR_HD_RECT:
-    case COLOR_QHD:
-    case COLOR_QHD_RECT:
       msgImage.encoding = sensor_msgs::image_encodings::BGR8;
-      break;
-    case MONO_HD:
-    case MONO_HD_RECT:
-    case MONO_QHD:
-    case MONO_QHD_RECT:
-      msgImage.encoding = sensor_msgs::image_encodings::TYPE_8UC1;
       break;
     case COUNT:
       return;
@@ -826,34 +812,20 @@ private:
     memcpy(msgImage.data.data(), image.data, size);
   }
 
-  void createCompressed(const cv::Mat &image, const std_msgs::Header &header, const Image type, sensor_msgs::CompressedImage &msgImage) const
+  void createCompressed(const cv::Mat &image, const std_msgs::Header &header,
+                        const Image type, sensor_msgs::CompressedImage &msgImage) const
   {
     msgImage.header = header;
 
     switch(type)
     {
     case IR_SD:
-    case IR_SD_RECT:
     case DEPTH_SD:
-    case DEPTH_SD_RECT:
-    case DEPTH_HD:
-    case DEPTH_QHD:
       msgImage.format = compression_16_bit_string_;
       cv::imencode(compression_16_bit_ext_, image, msgImage.data, compression_params_);
       break;
-    case COLOR_SD_RECT:
     case COLOR_HD:
-    case COLOR_HD_RECT:
-    case COLOR_QHD:
-    case COLOR_QHD_RECT:
       msgImage.format = sensor_msgs::image_encodings::BGR8 + "; jpeg compressed bgr8";
-      cv::imencode(".jpg", image, msgImage.data, compression_params_);
-      break;
-    case MONO_HD:
-    case MONO_HD_RECT:
-    case MONO_QHD:
-    case MONO_QHD_RECT:
-      msgImage.format = sensor_msgs::image_encodings::TYPE_8UC1 + "; jpeg compressed ";
       cv::imencode(".jpg", image, msgImage.data, compression_params_);
       break;
     case COUNT:
