@@ -95,6 +95,14 @@ target_link_libraries(kinect2_bridge
   ${kinect2_registration_LIBRARY}
 )
 
+add_executable(kinect2_bridge_raw src/kinect2_bridge_raw.cpp)
+target_link_libraries(kinect2_bridge_raw
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  ${freenect2_LIBRARY}
+)
+
+
 #############
 ## Install ##
 #############
