@@ -1,6 +1,6 @@
+#include <algorithm>
 #include <sensor_msgs/CameraInfo.h>
 #include <libfreenect2/libfreenect2.hpp>
-
 
 void toFreenect2(const sensor_msgs::CameraInfo& msg,
                   libfreenect2::Freenect2Device::ColorCameraParams& params)
@@ -46,17 +46,9 @@ void toCameraInfo(const libfreenect2::Freenect2Device::ColorCameraParams& params
     params.my_x0y0 // 1
   };
 
-  msg.K = { params.fx, 0, params.cx,
-            0, params.fy, 0,
-            0, 0, 1. };
-
-  msg.R = { 1., 0,  0,
-            0,  1., 0,
-            0,  0,  1. };
-
-  msg.P = { params.fx, 0, params.cx, -0.0520,
-            0, params.fy, 0, 0
-            0, 0, 1., 0 };
+  msg.K = {{ params.fx, 0, params.cx, 0, params.fy, 0, 0, 0, 1. }};
+  msg.R = {{ 1., 0, 0, 0, 1., 0, 0, 0, 1. }};
+  msg.P = {{ params.fx, 0, params.cx, -0.0520, 0, params.fy, 0, 0, 0, 0, 1., 0 }};
 }
 
 void toCameraInfo(const libfreenect2::Freenect2Device::IrCameraParams& params,
@@ -67,18 +59,9 @@ void toCameraInfo(const libfreenect2::Freenect2Device::IrCameraParams& params,
   msg.distortion_model = "plumb_bob";
 
   msg.D = { params.k1, params.k2, params.p1, params.p2, params.k3 };
-
-  msg.K = { params.fx, 0, params.cx,
-            0, params.fy, 0,
-            0, 0, 1. };
-
-  msg.R = { 1., 0,  0,
-            0,  1., 0,
-            0,  0,  1. };
-
-  msg.P = { params.fx, 0, params.cx, -0.0520,
-            0, params.fy, 0, 0
-            0, 0, 1., 0 };
+  msg.K = {{ params.fx, 0, params.cx, 0, params.fy, 0, 0, 0, 1. }};
+  msg.R = {{ 1., 0, 0, 0, 1., 0, 0, 0, 1. }};
+  msg.P = {{ params.fx, 0, params.cx, -0.0520, 0, params.fy, 0, 0, 0, 0, 1., 0 }};
 }
 
 void toCameraInfo(const cv::Size& size,
@@ -91,9 +74,8 @@ void toCameraInfo(const cv::Size& size,
   msg.height = size.height;
   msg.width = size.width;
   msg.distortion_model = "plumb_bob";
-  msg.D = std::vector<double>(distortion.begin(), distortion.end());
-  msg.K = std::vector<double>(intrinsic.begin(), intrinsic.end());
-  msg.R = std::vector<double>(rotation.begin(), rotation.end());
-  msg.P = std::vector<double>(projection.begin(), projection.end());
+  std::copy(distortion.begin<double>(), distortion.end<double>(), msg.D.begin());
+  std::copy(intrinsic.begin<double>(), intrinsic.end<double>(), msg.K.begin());
+  std::copy(rotation.begin<double>(), rotation.end<double>(), msg.R.begin());
+  std::copy(projection.begin<double>(), projection.end<double>(), msg.P.begin());
 }
-
